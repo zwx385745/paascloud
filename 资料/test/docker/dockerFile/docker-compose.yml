@@ -1,0 +1,69 @@
+version: '3'
+services:
+  paascloud-eureka:
+    build: ./paascloud-eureka
+    ports:
+    - "8761:8761"
+    container_name: paascloud-eureka
+    command: ["bundle", "exec", "thin", "-p", "3000"]
+    depends_on:
+      - rabbitmq15672
+  redis6379:
+    image: docker.io/redis
+    ports:
+    - "6379:6379"
+    container_name: redis6379
+    depends_on:
+    - zoo1
+    - zoo2
+    - zoo3
+    environment:
+      REDIS_PASS: 123456
+
+  rabbitmq15672:
+    image: index.tenxcloud.com/tenxcloud/rabbitmq
+    ports:
+    - "5672:5672"
+    - "15672:15672"
+    container_name: rabbitmq15672
+    depends_on:
+      - redis6379    
+    environment:
+      RABBITMQ_PASS: admin
+
+
+
+
+
+  zoo1:
+      image: zookeeper
+      restart: always
+      container_name: zoo1
+      ports:
+          - "2181:2181"
+      environment:
+          ZOO_MY_ID: 1
+          ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+
+  zoo2:
+      image: zookeeper
+      restart: always
+      container_name: zoo2
+      ports:
+          - "2182:2181"
+      environment:
+          ZOO_MY_ID: 2
+          ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+
+  zoo3:
+      image: zookeeper
+      restart: always
+      container_name: zoo3
+      ports:
+          - "2183:2181"
+      environment:
+          ZOO_MY_ID: 3
+          ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+      
+      
+    
