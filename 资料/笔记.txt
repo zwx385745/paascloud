@@ -1,4 +1,0 @@
-docker stop $(docker ps -a -q) && docker  rm $(docker ps -a -q)
-
-
-https://blog.csdn.net/qq_36148847/article/details/79427878
